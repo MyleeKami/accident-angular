@@ -1,0 +1,17 @@
+:host{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    height: 100vh;
+    justify-content: space-evenly;
+}
+
+img {
+    width: 15em;
+}
+
+button{
+    padding: 1em 2em;
+    font-size : 1.5em
+    
+}
