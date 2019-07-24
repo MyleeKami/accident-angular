@@ -42,7 +42,7 @@ export class BarDiagramComponent implements OnInit {
         console.log('bars', depts);
         depts.transition().delay(1000).duration(1000)
           .style('width', d => `${(100 * d['nbr-accident'] / 7000)}%`)
-          .transition().delay(1000).duration(1000)
+          .transition().delay(200).duration(1000)
           .attr('class', 'bar finished')
           .style('background-color', 'hsl(0,100%,40%)');
       } catch (error) {
