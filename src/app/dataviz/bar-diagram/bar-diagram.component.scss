@@ -1,0 +1,30 @@
+.histo {
+  display: flex;
+  flex-flow: column;
+  padding: 0.5em 0.3em;
+  width: 100%;
+  min-height: 20em;
+  background: #eeeeee;
+}
+
+.dept {
+  display: flex;
+  height: 1em;
+  margin: 0.2em 0;
+  align-items: center
+}
+
+.dept-num{
+  width: 2em;
+}
+
+.nbr-accident{
+  font-size: 0.7em;
+  margin: 0 0.2em;
+}
+
+.bar {
+  width: 0;
+  height: 1em;
+  background: red;
+}
