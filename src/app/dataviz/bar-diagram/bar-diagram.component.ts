@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
+import { NONE_TYPE } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-bar-diagram',
   templateUrl: './bar-diagram.component.html',
-  styleUrls: ['./bar-diagram.component.scss']
+  styleUrls: ['./bar-diagram.component.scss'],
+  encapsulation : ViewEncapsulation.None,
 })
 export class BarDiagramComponent implements OnInit {
 
@@ -14,7 +16,7 @@ export class BarDiagramComponent implements OnInit {
 
     (async () => {
       try {
-        const data = await d3.csv('data/caracteristiques-2017.csv');
+        const data = await d3.csv('assets/data/caracteristiques-2017.csv');
         console.log('data', data);
         const data2 = data.map(d => d.dep.replace(/^(.*)0$/, '$1')).reduce((acc, n) => {
           acc[n] = (acc[n] === undefined) ? 1 : acc[n] + 1;
@@ -33,13 +35,15 @@ export class BarDiagramComponent implements OnInit {
           .classed('dept', true)
           .html(d => `
       <span class="dept-num">${d.dept}</span>
-      <div class="bar" style="width:0%; background-color: hsl(0,100%,80%)" title=${d['nbr-accident']}></div>`);
-        // <span class="nbr-accident">${d['nbr-accident']}</span>`);
+      <div class="bar" style="width:0%; background-color: hsl(0,100%,80%)"></div>
+       <span class="nbr-accident">${d['nbr-accident']}</span>`);
         console.log('bars', bars);
         const depts = d3.select('.histo').selectAll('.bar').data(data3);
-        depts.transition().delay(1000).duration(2000)
+        console.log('bars', depts);
+        depts.transition().delay(1000).duration(1000)
           .style('width', d => `${(100 * d['nbr-accident'] / 7000)}%`)
-          .transition().delay(1000).duration(2000)
+          .transition().delay(1000).duration(1000)
+          .attr('class', 'bar finished')
           .style('background-color', 'hsl(0,100%,40%)');
       } catch (error) {
         console.log('error', error);
