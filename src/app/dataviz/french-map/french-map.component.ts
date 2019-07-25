@@ -1,33 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import * as d3 from 'd3';
+import { ViewEncapsulation } from '@angular/core';
 
 
 @Component({
   selector: 'app-french-map',
   templateUrl: './french-map.component.html',
-  styleUrls: ['./french-map.component.scss']
+  styleUrls: ['./french-map.component.scss'],
+  encapsulation : ViewEncapsulation.None,
 })
 export class FrenchMapComponent implements OnInit {
 
-  constructor() { }
+  constructor(private elt: ElementRef) { }
 
   ngOnInit() {
     (async () => {
       const width = 960;
       const height = 700;
       const formatNumber = d3.format('s');
-
-      const populationBins = [250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 3000000];
-      const colorBins = populationBins.map(n => `hsl(240, 30%, ${100 - n * 100 / 3000000}%)`);
+      const populationBins = [250, 500, 750, 1000, 1250, 1500, 2000, 6000];
+      // const populationBins = [250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 3000000];
+      const colorBins = populationBins.map(n => `hsl(240, 30%, ${100 - n * 100 / 6000}%)`);
 
       const color = d3.scaleThreshold<number, string>()
         .domain(populationBins)
         .range(['#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b']);
 
-      const x = d3.scaleLinear()
-        .domain([77156, 2579208])
-        .range([0, 300]);
-
+      // const x = d3.scaleLinear()
+      //  .domain([77156, 2579208])
+      //  .range([0, 300]);
+      const x = d3.scaleLog()
+        .domain([200, 6000])
+        .range([0, 400]);
       const xAxis = d3.axisBottom(x)
         .tickSize(13)
         .tickValues(color.domain())
@@ -43,11 +47,11 @@ export class FrenchMapComponent implements OnInit {
       const path = d3.geoPath()
         .projection(projection);
 
-      const tooltip = d3.select('body').append('div')
+      const tooltip = d3.select(this.elt.nativeElement).append('div')
         .attr('class', 'tooltip')
         .style('opacity', 0);
 
-      const svg = d3.select('body').append('svg')
+      const svg = d3.select(this.elt.nativeElement).append('svg')
         .attr('width', width)
         .attr('height', height);
 
@@ -74,21 +78,34 @@ export class FrenchMapComponent implements OnInit {
         .text('Population');
       const france: any = await d3.json('assets/geojson/departements.json');
       const population = await d3.csv('assets/data/population-departement.csv');
+      const accidents = await d3.csv('assets/data/caracteristiques-2017.csv');
+      const data2 = accidents.map(d => d.dep.replace(/^(.*)0$/, '$1')).reduce((acc, n) => {
+        acc[n] = (acc[n] === undefined) ? 1 : acc[n] + 1;
+        return acc;
+      }, {});
+      // dégueulasse mais bon.... en attendant
+      data2['2A'] = data2[201];
+      data2['2B'] = data2[202];
       const regions = svg.selectAll('.departements')
         .data(france.features)
         .enter().append('path')
         .attr('class', 'departements')
         .attr('d', path)
         .style('fill', (departement: any) => {
-          const paringData: any = population.filter((pop) => departement.properties.code === pop.numero)[0];
-          return paringData ? color(paringData.population.replace(/,/g, '')) : color(0);
+          const paringData = data2[departement.properties.code];
+          return paringData ? color(paringData) : color(0);
         })
+        // .style('fill', (departement: any) => {
+        //  const paringData: any = population.filter((pop) => departement.properties.code === pop.numero)[0];
+        //  return paringData ? color(paringData.population.replace(/,/g, '')) : color(0);
+        // })
         .on('mouseover', (d: any) => {
-          const paringData = population.filter((pop) => d.properties.code === pop.numero)[0];
+          const paringData = data2[d.properties.code]; /* population.filter((pop) => d.properties.code === pop.numero)[0];*/
           tooltip.transition()
             .duration(200)
             .style('opacity', .9);
-          tooltip.html(`${d.properties.nom} (${d.properties.code}): ${paringData.population.replace(/,/g, ' ')}`)
+          tooltip.html(`${d.properties.nom} (${d.properties.code}): ${paringData}`)
+            // tooltip.html(`${d.properties.nom} (${d.properties.code}): ${paringData.population.replace(/,/g, ' ')}`)
             .style('left', (d3.event.pageX + 5) + 'px')
             .style('top', (d3.event.pageY - 28) + 'px');
         })
