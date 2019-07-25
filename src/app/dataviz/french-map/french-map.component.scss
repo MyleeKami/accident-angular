@@ -1,4 +1,17 @@
-
+app-french-map {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding-top: 100%;
+background: #eee;
+  svg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
 .border {
   stroke-width: .3px;
   fill: none;
@@ -26,6 +39,7 @@
 
 .tooltip {
   position: absolute;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
