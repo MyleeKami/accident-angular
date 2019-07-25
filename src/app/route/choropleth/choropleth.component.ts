@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -8,16 +8,27 @@ import * as d3 from 'd3';
 })
 export class ChoroplethComponent implements OnInit {
 
+  killed: any;
+
+
   constructor() { }
 
   ngOnInit() {
-    this.generateKilledFile();
+    (async () => {
+      this.killed = await this.generateKilledFile();
+    })();
   }
+
   async generateKilledFile() {
     const usagers = await d3.csv('assets/data/usagers-2017.csv');
     const caracteristics = await d3.csv('assets/data/caracteristiques-2017.csv');
     const popdep = await d3.csv('assets/data/population-departement.csv');
-    //filtrer sur les morts
+    const str = localStorage.getItem('app-choropleth');
+    console.log('toto', str);
+    if (str) {
+      return JSON.parse(str);
+    }
+    // filtrer sur les morts
     const killed = usagers.filter(r => r.grav === '2')
       .map(r => r.Num_Acc);
     const deps = killed.map(numAcc => {
@@ -36,10 +47,11 @@ export class ChoroplethComponent implements OnInit {
       return {
         numero: r.numero,
         nom: r.nom,
-        population: k
+        population: k + '',
       };
     });
-    console.log('result', result);
+    localStorage.setItem('app-choropleth', JSON.stringify(result));
+    return result;
   }
 
 }
