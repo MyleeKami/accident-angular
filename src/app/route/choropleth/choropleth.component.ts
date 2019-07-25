@@ -24,7 +24,6 @@ export class ChoroplethComponent implements OnInit {
     const caracteristics = await d3.csv('assets/data/caracteristiques-2017.csv');
     const popdep = await d3.csv('assets/data/population-departement.csv');
     const str = localStorage.getItem('app-choropleth');
-    console.log('toto', str);
     if (str) {
       return JSON.parse(str);
     }
