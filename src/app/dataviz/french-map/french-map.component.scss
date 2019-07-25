@@ -2,8 +2,9 @@ app-french-map {
   position: relative;
   display: block;
   width: 100%;
+  max-width: 35em;
   padding-top: 100%;
-background: #eee;
+
   svg {
     position: absolute;
     top: 0;
