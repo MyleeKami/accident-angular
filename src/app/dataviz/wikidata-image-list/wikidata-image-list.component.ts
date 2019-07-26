@@ -7,7 +7,7 @@ import { WikidataService } from 'src/app/wikidata.service';
   styleUrls: ['./wikidata-image-list.component.scss']
 })
 export class WikidataImageListComponent implements OnInit {
-  result: any[];
+  result: any;
 
   constructor(private wd: WikidataService) { }
 
@@ -25,6 +25,7 @@ export class WikidataImageListComponent implements OnInit {
     }
       ORDER by desc(?dead)`;
     this.result = await this.wd.request(sparql);
+    console.log('results', this.result);
   }
 
 }
