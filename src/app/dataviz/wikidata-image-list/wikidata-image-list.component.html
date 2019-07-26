@@ -1,9 +1,12 @@
-<p>wikidata-image-list works!</p>
+<div><div>source : Wikipedia</div>
+  <img class="wikidata" src="assets/wikipedia.png" alt="merci wikidata" >
+</div>
+
 <div class="container" *ngIf="result">
   <div *ngFor='let r of result.results.bindings'>
     <div class="panel">
        <div class="name">{{r.hLabel.value}}</div>
-       <div class="date">{{r.dead.value | mydate}}</div>
+       <div class="date">{{r.dead.value | niceDate}}</div>
        <div class="picture">
          <img *ngIf="r.image" [src]="r.image.value" [alt]="r.hLabel.value">
          <img *ngIf="!r.image" src="assets/user.svg" [alt]="r.hLabel.value">
